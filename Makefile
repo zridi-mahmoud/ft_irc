@@ -3,37 +3,37 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: akharraz <akharraz@student.42.fr>          +#+  +:+       +#+         #
+#    By: mzridi <mzridi@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/22 16:06:48 by akharraz          #+#    #+#              #
-#    Updated: 2023/05/22 17:16:30 by akharraz         ###   ########.fr        #
+#    Updated: 2023/06/20 22:42:19 by mzridi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ircserv
-
 CC = c++
+SRC = $(addsuffix .cpp, ircserv client channel join main privmsg notice show mode nick user pass)
 
-SRC = $(addsuffix .cpp, main ircserv)
-
-INC = ircserv.hpp
-
-FLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
+ 
+INC = $(addprefix ./inc/, ircserv.hpp channel.hpp client.hpp)
 
 OBJS = $(SRC:.cpp=.o)
-all : ${NAME}
 
-${OBJS} : %.o: %.cpp ${INC}
-	${CC} -c $(FLAGS) $< -o $@ -c
+all: $(NAME)
 
-${NAME} : ${OBJS}
-	${CC} ${FLAGS} ${OBJS} -o ${NAME}
+%.o: src/%.cpp $(INC)
 
+	$(CC) -c $(CFLAGS) -I./inc $< -o $@
 
-clean : 
-	rm -f ${OBJS}
+$(NAME): $(OBJS)
 
-fclean : clean
-	rm -f ${NAME}
+	$(CC) $(CFLAGS) $(OBJS) -o $@
 
-re : fclean all
+clean:
+	rm -rf $(OBJS)
+
+fclean: clean
+	rm -rf $(NAME)
+
+re: fclean all
